@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Pong</title>
+    </head>
+
+    <body>
+        <canvas width="600" height="400"></canvas>
+
+        <audio src="C:\Users\User\Desktop\Alura\trilha.mp3"></audio>
+
+         <script>
+            	
+            var tela = document.querySelector("canvas");
+            var pen = tela.getContext("2d");
+
+             //bola;
+
+            var xBall = 300;
+            var yBall = 200;
+            var speedX = 5
+            var speedY = 5;
+            var raio = 10;
+
+            //raquete
+            var xRaquete = 3;
+            var yRaquete = 150;
+            var cima = 38;
+            var baixo = 40;
+
+            //raquete oponente
+
+            var xRaqueteOponente = 587;
+            var yRaqueteOponente = 150;
+            var yVelocidadeOponente;
+            var chanceDeErrar = 0;
+
+            //placar do jogo
+
+            var meusPontos = 0;
+            var pontosOponente= 0;
+
+            //sons do jogo
+
+            var trilha;
+            var raquetada;
+            var ponto;
+                
+            function preload() {
+
+                     
+
+                trilha = p5.loadSound("C:\Users\User\Desktop\Alura\trilha.mp3");
+                ponto = p5.loadSound("C:\Users\User\Desktop\Alura\ponto.mp3");
+                raquetada = p5.loadSound("C:\Users\User\Desktop\Alura\raquetada.mps3");                   
+            }
+
+            function background() {
+                pen.fillStyle = "black";
+                pen.fillRect(0, 0, 600, 400);
+            }
+
+            function desenhaRaquete(xRaquete, yRaquete) {
+
+                pen.fillStyle = "white";
+                pen.fillRect(xRaquete, yRaquete, 10, 90)
+                pen.fill();
+            }    
+
+            function desenhaCirculo(xBall, yBall, raio) {
+
+            	pen.fillStyle = "white";
+                pen.beginPath();
+            	pen.arc(xBall, yBall, raio, 0, 2 * 3.14);
+            	pen.fill();
+
+            }
+
+            function limpaTela() {
+
+            		pen.clearRect(0, 0, 600, 400);
+            }
+
+            function desenhaRaqueteOponente(xRaqueteOponente, yRaqueteOponente) {
+
+                pen.fillStyle = "white";
+                pen.fillRect(xRaqueteOponente, yRaqueteOponente, 10, 90)
+                pen.fill();
+            }
+
+            function colisaoBorda() {
+
+                xBall = xBall + speedX;
+                yBall = yBall + speedY;
+
+                if(xBall >= 600 || xBall == 0) {
+
+                    speedX *= -1;
+
+                    } if (yBall >= 400 || yBall <= 0) {
+
+                        speedY *= -1;
+                    }
+            }   
+
+
+            function atualiza() {
+
+            limpaTela();
+            background();
+            desenhaRaquete(xRaquete, yRaquete);
+            desenhaRaqueteOponente(xRaqueteOponente, yRaqueteOponente);
+            desenhaCirculo(xBall, yBall, raio);
+            verificaColisaoRaquete();
+            colisaoBorda();
+            movimentaOponente();
+            incluiPlacar();
+                
+            }
+
+            setInterval(atualiza, 20);
+
+            function movimentoRaquete(evento) {
+
+                if((evento.keyCode == cima) && (yRaquete > 1)) {
+
+                     yRaquete = yRaquete - 10;
+
+                } if((evento.keyCode == baixo) && (yRaquete < 380)) {
+
+                    yRaquete = yRaquete + 10;
+
+                }
+            }
+
+            document.onkeydown = movimentoRaquete;
+
+            function verificaColisaoRaquete() {
+
+                if((xBall - 15 <= xRaquete)
+                    && (yBall >= yRaquete - 35)
+                     && (yBall <= yRaquete + 90)) {
+
+                    speedX = speedX *= -1;
+
+                } else if ((xBall + 10 >= xRaqueteOponente)
+                    && (yBall >= yRaqueteOponente - 90)
+                     && (yBall <= yRaqueteOponente + 90))  {
+
+                    speedX = speedX *= -1;
+                }
+            }
+
+            function movimentaOponente() {
+
+                yVelocidadeOponente = yBall - yRaqueteOponente - 45 / 2 - 30;
+                yRaqueteOponente += yVelocidadeOponente + chanceDeErrar
+                calculaChanceDeErrar()
+            }
+
+            function calculaChanceDeErrar() {
+                if (pontosOponente >= meusPontos) {
+                chanceDeErrar += 1
+                if (chanceDeErrar >= 20){
+                chanceDeErrar = 40
+                }
+                } else {
+                chanceDeErrar -= 1
+                if (chanceDeErrar <= 35){
+                    chanceDeErrar = 35
+                }
+              }
+            }
+
+            function incluiPlacar(texto) {
+
+                var tela = document.querySelector("canvas");
+                var pen = tela.getContext("2d");
+
+                pen.fillStyle = "black";
+                pen.fillRect(255, 5, 40, 25)
+                pen.strokeStyle = "white"
+                pen.strokeRect(255, 5, 40, 25)
+
+                pen.fillStyle = "black";
+                pen.fillRect(315, 5, 40, 25)
+                pen.strokeStyle = "white"
+                pen.strokeRect(315, 5, 40, 25)
+
+                pen.font = "20px arial";
+                pen.fillStyle = "white";
+                pen.fillText(meusPontos, 270, 25);
+                pen.fillText(pontosOponente, 330, 25);
+
+                if(xBall == 600) {
+
+                    meusPontos = meusPontos + 1;
+
+                } if (xBall == 0) {
+
+                    pontosOponente = pontosOponente + 1;
+                }
+            }
+
+            </script>
+        </body>
